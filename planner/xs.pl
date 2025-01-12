@@ -41,7 +41,7 @@ int main(void)
         return 0;
 }
 EOF
-	['getentropy in unistd.h', 'NATIVE_GETENTROPY', <<EOF ],
+	['getentropy in unistd.h', 'UNISTD_GETENTROPY', <<EOF ],
 #include <unistd.h>
 
 int main(void)
