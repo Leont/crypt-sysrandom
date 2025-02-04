@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        perl-version: [ "5.40", "5.36" ]
+        perl-version: [ "5.40", "5.36", "5.30", "5.26", "5.20-buster", "5.16-buster", "5.10-buster" ]
     container:
       image: perldocker/perl-tester:${{ matrix.perl-version }}
     steps:
