@@ -69,15 +69,15 @@ jobs:
         run: cpanm --installdeps --notest .
       - name: Configure
         working-directory: ./Dist-To-Test
-        run: perl Build.PL
+        run: perl Makefile.PL
       - name: Build
         working-directory: ./Dist-To-Test
-        run: ./Build build
+        run: make
 #      - name: Install yath
 #        run: cpanm --notest Test::Harnes Test2::Harness Test2::Harness::Renderer::JUnit
       - name: Test
         working-directory: ./Dist-To-Test
-        run: ./Build test
+        run: make test
 #      - name: Run the tests
 #        working-directory: ./Dist-To-Test
 #        run: |
@@ -111,15 +111,15 @@ jobs:
         run: cpanm --installdeps --notest .
       - name: Configure
         working-directory: ./Dist-To-Test
-        run: perl Build.PL
+        run: perl Makefile.PL
       - name: Build
         working-directory: ./Dist-To-Test
-        run: ./Build build
+        run: make
 #      - name: Install yath
 #        run: cpanm --notest Test::Harnes Test2::Harness Test2::Harness::Renderer::JUnit
       - name: Test
         working-directory: ./Dist-To-Test
-        run: ./Build test
+        run: make test
 
   windows-test:
     needs: build-tarball
@@ -143,12 +143,12 @@ jobs:
         run: cpanm --installdeps --notest -v .
       - name: Configure
         working-directory: ./Dist-To-Test
-        run: perl Build.PL
+        run: perl Makefile.PL
       - name: Build
         working-directory: ./Dist-To-Test
-        run: ./Build build
+        run: make
 #      - name: Install yath
 #        run: cpanm --notest Test::Harnes Test2::Harness Test2::Harness::Renderer::JUnit
       - name: Test
         working-directory: ./Dist-To-Test
-        run: ./Build test
+        run: make test
