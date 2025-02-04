@@ -1,6 +1,7 @@
 Revision history for Crypt-SysRandom
 
 {{$NEXT}}
+          - Split off XS functionality to Crypt::SysRandom::XS
 
 0.005     2025-01-15 14:25:11+01:00 Europe/Brussels
           - Fix linking on Windows
