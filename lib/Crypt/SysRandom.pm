@@ -14,17 +14,17 @@ if (eval { require Crypt::SysRandom::XS }) {
 } elsif (eval { require Win32::API }) {
 	my $genrand = Win32::API->new('advapi32', 'INT SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength)')
 		or die "Could not import SystemFunction036: $^E";
-
-	*random_bytes = sub {
+	sub random_bytes_win32 {
 		my ($count) = @_;
 		return '' if $count == 0;
 		my $buffer = chr(0) x $count;
 		$genrand->Call($buffer, $count) or Carp::croak("Could not read random bytes");
 		return $buffer;
-	};
+	}
+	*random_bytes = \&random_bytes_win32;
 } elsif (-e '/dev/urandom') {
 	open my $fh, '<:raw', '/dev/urandom' or die "Couldn't open /dev/urandom: $!";
-	*random_bytes = sub {
+	sub random_bytes_urandom {
 		my ($count) = @_;
 		my ($result, $offset) = ('', 0);
 		while ($offset < $count) {
@@ -34,10 +34,13 @@ if (eval { require Crypt::SysRandom::XS }) {
 			$offset += $read;
 		}
 		return $result;
-	};
+	}
+	*random_bytes = \&random_bytes_urandom;
 } else {
 	die "No source of randomness found";
 }
+
+delete @Crypt::SysRandom::{qw(random_bytes_win32 random_bytes_urandom)};
 
 1;
 
