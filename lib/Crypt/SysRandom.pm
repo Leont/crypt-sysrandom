@@ -57,7 +57,7 @@ This module uses whatever interface is available to procure cryptographically ra
 
 =func random_bytes($count)
 
-This will fetch a string of C<$count> random bytes containing cryptographically secure random date.
+This will fetch a string of C<$count> random bytes containing cryptographically secure random data.
 
 =head1 Backends
 
