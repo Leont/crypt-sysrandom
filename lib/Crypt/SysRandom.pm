@@ -17,6 +17,7 @@ if (eval { require Crypt::SysRandom::XS }) {
 	sub random_bytes_win32 {
 		my ($count) = @_;
 		return '' if $count == 0;
+		Carp::croak('Could not read more than 256 bytes of randomness') if $count > 256;
 		my $buffer = chr(0) x $count;
 		$genrand->Call($buffer, $count) or Carp::croak("Could not read random bytes");
 		return $buffer;
@@ -26,6 +27,7 @@ if (eval { require Crypt::SysRandom::XS }) {
 	open my $fh, '<:raw', '/dev/urandom' or die "Couldn't open /dev/urandom: $!";
 	sub random_bytes_urandom {
 		my ($count) = @_;
+		Carp::croak('Could not read more than 256 bytes of randomness') if $count > 256;
 		my ($result, $offset) = ('', 0);
 		while ($offset < $count) {
 			my $read = sysread $fh, $result, $count - $offset, $offset;
@@ -57,7 +59,7 @@ This module uses whatever interface is available to procure cryptographically ra
 
 =func random_bytes($count)
 
-This will fetch a string of C<$count> random bytes containing cryptographically secure random data.
+This will fetch a string of C<$count> random bytes containing cryptographically secure random data. The maximum allowed C<$count> is C<256> bytes, which should be more than enough for any keying/salting/iv usage. If you need more randomness you probably want to look into feeding the system randomness as a seed into a cryptographically secure pseudorandom number generator.
 
 =head1 Backends
 
