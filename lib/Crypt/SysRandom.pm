@@ -37,7 +37,7 @@ if (eval { require Crypt::SysRandom::XS }) {
 	}
 	*random_bytes = \&random_bytes_urandom;
 } else {
-	die "No source of randomness found";
+	die "No source of randomness found, consider installing Crypt::SysRandom::XS";
 }
 
 delete @Crypt::SysRandom::{qw(random_bytes_win32 random_bytes_urandom)};
