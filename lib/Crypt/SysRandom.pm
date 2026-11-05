@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 use Exporter 'import';
-our @EXPORT_OK = 'random_bytes';
+our @EXPORT_OK = qw/random_bytes random_uuid/;
+our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 use Carp ();
 use Errno ();
@@ -41,6 +42,13 @@ if (eval { require Crypt::SysRandom::XS }) {
 
 delete @Crypt::SysRandom::{qw(random_bytes_win32 random_bytes_urandom)};
 
+sub random_uuid {
+	my $random = random_bytes(16);
+	vec($random, 35, 2) = 2; # Variant marker, must be 2 per RFC 9562
+	vec($random, 13, 4) = 4; # Version marker, we're doing UUIDv4
+	return join '-', unpack 'H8H4H4H4H12', $random;
+}
+
 1;
 
 # ABSTRACT: Perl interface to system randomness
@@ -57,6 +65,10 @@ This module uses whatever interface is available to procure cryptographically ra
 =func random_bytes($count)
 
 This will fetch a string of C<$count> random bytes containing cryptographically secure random data.
+
+=func random_uuid()
+
+This will generate a cryptographically random UUIDv4.
 
 =head1 Backends
 
