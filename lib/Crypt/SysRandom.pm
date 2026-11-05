@@ -9,11 +9,11 @@ our @EXPORT_OK = 'random_bytes';
 use Carp ();
 use Errno ();
 
+my $rtl_gen_random = 'INT SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength)';
+
 if (eval { require Crypt::SysRandom::XS }) {
 	*random_bytes = \&Crypt::SysRandom::XS::random_bytes;
-} elsif (eval { require Win32::API }) {
-	my $genrand = Win32::API->new('advapi32', 'INT SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength)')
-		or die "Could not import SystemFunction036: $^E";
+} elsif (my $genrand = eval { require Win32::API; Win32::API->new('advapi32', $rtl_gen_random) }) {
 	sub random_bytes_win32 {
 		my ($count) = @_;
 		return '' if $count == 0;
@@ -22,8 +22,7 @@ if (eval { require Crypt::SysRandom::XS }) {
 		return $buffer;
 	}
 	*random_bytes = \&random_bytes_win32;
-} elsif (-e '/dev/urandom') {
-	open my $fh, '<:raw', '/dev/urandom' or die "Couldn't open /dev/urandom: $!";
+} elsif (open my $fh, '<:raw', '/dev/urandom') {
 	sub random_bytes_urandom {
 		my ($count) = @_;
 		my ($result, $offset) = ('', 0);
