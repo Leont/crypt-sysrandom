@@ -4,11 +4,12 @@ use strict;
 use warnings;
 
 use Exporter 'import';
-our @EXPORT_OK = qw/random_bytes random_uuid/;
+our @EXPORT_OK = qw/random_bytes random_hex random_base64 random_base64url random_uuid/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 use Carp ();
 use Errno ();
+use MIME::Base64 3.11 ();
 
 my $rtl_gen_random = 'INT SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength)';
 
@@ -42,6 +43,18 @@ if (eval { require Crypt::SysRandom::XS }) {
 
 delete @Crypt::SysRandom::{qw(random_bytes_win32 random_bytes_urandom)};
 
+sub random_hex {
+	return unpack 'H*', random_bytes(@_);
+}
+
+sub random_base64 {
+	return MIME::Base64::encode_base64(random_bytes(@_), '');
+}
+
+sub random_base64url {
+	return MIME::Base64::encode_base64url(random_bytes(@_));
+}
+
 sub random_uuid {
 	my $random = random_bytes(16);
 	vec($random, 35, 2) = 2; # Variant marker, must be 2 per RFC 9562
@@ -60,11 +73,23 @@ sub random_uuid {
 
 =head1 DESCRIPTION
 
-This module uses whatever interface is available to procure cryptographically random data from the system.
+This module uses whatever interface is available to procure cryptographically random data from the system. All functions are optionally exported.
 
 =func random_bytes($count)
 
 This will fetch a string of C<$count> random bytes containing cryptographically secure random data.
+
+=func random_hex($count)
+
+This will fetch a string of C<$count> random bytes containing cryptographically secure random data and hex encode it (so the result will be twice as many bytes).
+
+=func random_base64($count)
+
+This will fetch a string of C<$count> random bytes containing cryptographically secure random data and base64 encode it (so the result will be about 33% larger).
+
+=func random_base64url($count)
+
+This will fetch a string of C<$count> random bytes containing cryptographically secure random data and base64url encode it (so the result will be about 33% larger).
 
 =func random_uuid()
 
